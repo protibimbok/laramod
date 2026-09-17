@@ -9,6 +9,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
+use Laramod\Console\InitCommand;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\ProvidesApiRoutes;
 use Laramod\Contracts\ProvidesCommands;
@@ -65,6 +66,8 @@ class LaramodServiceProvider extends ServiceProvider
             foreach ($this->modules(ProvidesCommands::class) as $module) {
                 $this->commands($module->commands());
             }
+
+            $this->commands([InitCommand::class]);
 
             $this->publishes([
                 __DIR__.'/../config/laramod.php' => $this->app->configPath('laramod.php'),
