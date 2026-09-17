@@ -212,7 +212,7 @@ class InitCommand extends Command
         }
 
         return $this->manual(sprintf(
-            'Install "laramod-vite-plugin" and, in %s, import laramod from it and call laramod({...}) in place of laravel({...}) with the same options',
+            'Install "laramod-vite-plugin" and, in %s, import laramod from it and call laramod() in place of laravel(), with the same options',
             $file,
         ));
     }
