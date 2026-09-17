@@ -4,6 +4,8 @@ namespace Laramod\Tests\Feature;
 
 use Illuminate\Support\ServiceProvider;
 use Laramod\LaramodServiceProvider;
+use Laramod\ModuleRegistry;
+use Laramod\Modules;
 use Laramod\Tests\TestCase;
 
 class ServiceProviderTest extends TestCase
@@ -20,5 +22,10 @@ class ServiceProviderTest extends TestCase
             config_path('laramod.php'),
             ServiceProvider::pathsToPublish(LaramodServiceProvider::class, 'laramod-config'),
         );
+    }
+
+    public function test_the_facade_resolves_the_shared_module_registry(): void
+    {
+        $this->assertSame($this->app->make(ModuleRegistry::class), Modules::getFacadeRoot());
     }
 }

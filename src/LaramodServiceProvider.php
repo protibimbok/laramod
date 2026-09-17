@@ -12,6 +12,8 @@ class LaramodServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/laramod.php', 'laramod');
+
+        $this->app->singleton(ModuleRegistry::class);
     }
 
     /**
