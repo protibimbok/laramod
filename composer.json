@@ -4,6 +4,11 @@
     "description": "Explicit, convention-light modules for Laravel applications.",
     "keywords": ["laravel", "modules", "modular", "laramod"],
     "license": "MIT",
+    "homepage": "https://github.com/protibimbok/laramod",
+    "support": {
+        "issues": "https://github.com/protibimbok/laramod/issues",
+        "source": "https://github.com/protibimbok/laramod"
+    },
     "type": "library",
     "authors": [
         {
