@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\ProvidesViteEntries;
 use Laramod\ModuleRegistry;
+use ReflectionClass;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'laramod:vite')]
@@ -34,6 +35,8 @@ class ViteCommand extends Command
         $modules = array_values(array_map(fn (Module $module): array => [
             'name' => $module->name(),
             'path' => $this->relative($module->path()),
+            // The entries are declared in the module class, so the plugin restarts Vite when that file changes.
+            'file' => $this->relative((string) (new ReflectionClass($module))->getFileName()),
             'entries' => array_map(
                 $this->relative(...), $module instanceof ProvidesViteEntries ? $module->viteEntries() : [],
             ),

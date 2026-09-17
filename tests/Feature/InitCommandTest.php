@@ -136,6 +136,33 @@ class InitCommandTest extends TestCase
         $this->assertFileExists($this->basePath.'/bootstrap/modules.php');
     }
 
+    public function test_it_tells_how_to_set_up_the_vite_plugin_until_it_is_in_use(): void
+    {
+        $this->expectAutoloadDumps(1);
+
+        file_put_contents($config = $this->basePath.'/vite.config.ts', "import laravel from 'laravel-vite-plugin'\n");
+
+        $this->withoutMockingConsoleOutput()->artisan('laramod:init');
+
+        $this->assertStringContainsString('Install "laramod-vite-plugin" and, in vite.config.ts,', Artisan::output());
+        $this->assertSame("import laravel from 'laravel-vite-plugin'\n", file_get_contents($config));
+
+        file_put_contents($config, "import laramod from 'laramod-vite-plugin'\n");
+
+        $this->artisan('laramod:init');
+
+        $this->assertStringNotContainsString('laramod-vite-plugin', Artisan::output());
+    }
+
+    public function test_an_application_without_vite_gets_no_vite_hint(): void
+    {
+        $this->expectAutoloadDumps(1);
+
+        $this->withoutMockingConsoleOutput()->artisan('laramod:init');
+
+        $this->assertStringNotContainsString('vite', Artisan::output());
+    }
+
     /**
      * Expect Composer's autoloader to be regenerated the given number of times.
      */

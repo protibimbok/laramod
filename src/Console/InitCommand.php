@@ -41,11 +41,17 @@ class InitCommand extends Command
      */
     public function handle(Composer $composer): int
     {
+        $this->manual = [];
+
         $this->report($this->modulesPath().'/', $this->createModulesDirectory());
         $this->report('bootstrap/modules.php', $this->createBootstrapFile());
         $this->report('config/laramod.php', $this->publishConfig());
         $this->report('composer.json', $autoload = $this->addAutoloadNamespace());
         $this->report('phpunit.xml', $this->addTestSuiteDirectories());
+
+        if ($vite = $this->viteConfig()) {
+            $this->report($vite, $this->checkVitePlugin($vite));
+        }
 
         if ($autoload === 'updated') {
             $composer->setWorkingPath($this->laravel->basePath())->dumpAutoloads();
@@ -180,6 +186,35 @@ class InitCommand extends Command
             $updated !== $phpunit => 'updated',
             default => 'exists',
         };
+    }
+
+    /**
+     * Get the name of the application's Vite configuration file, if it has one.
+     */
+    protected function viteConfig(): ?string
+    {
+        foreach (['vite.config.js', 'vite.config.ts', 'vite.config.mjs', 'vite.config.mts'] as $file) {
+            if ($this->files->exists($this->laravel->basePath($file))) {
+                return $file;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Tell how to build the modules' assets. The file is the user's own JavaScript, so it is never edited.
+     */
+    protected function checkVitePlugin(string $file): string
+    {
+        if (str_contains($this->files->get($this->laravel->basePath($file)), 'laramod-vite-plugin')) {
+            return 'exists';
+        }
+
+        return $this->manual(sprintf(
+            'Install "laramod-vite-plugin" and, in %s, import laramod from it and call laramod({...}) in place of laravel({...}) with the same options',
+            $file,
+        ));
     }
 
     /**

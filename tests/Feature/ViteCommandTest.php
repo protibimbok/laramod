@@ -35,6 +35,7 @@ class ViteCommandTest extends TestCase
             [
                 'name' => 'blog',
                 'path' => 'tests/Fixtures/Modules/Blog',
+                'file' => 'tests/Fixtures/Modules/Blog/BlogModule.php',
                 'entries' => [
                     'tests/Fixtures/Modules/Blog/resources/js/app.js',
                     'tests/Fixtures/Modules/Blog/resources/css/app.css',
@@ -43,6 +44,7 @@ class ViteCommandTest extends TestCase
             [
                 'name' => 'scratch',
                 'path' => str_replace('\\', '/', ScratchModule::$path),
+                'file' => 'tests/Fixtures/Modules/Scratch/ScratchModule.php',
                 'entries' => [],
             ],
         ]], json_decode(Artisan::output(), true));
