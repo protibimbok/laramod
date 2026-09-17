@@ -13,11 +13,12 @@ use Laramod\Contracts\ProvidesRoutes;
 use Laramod\Contracts\ProvidesSeeders;
 use Laramod\Contracts\ProvidesTranslations;
 use Laramod\Contracts\ProvidesViews;
+use Laramod\Contracts\ProvidesViteEntries;
 use Laramod\Tests\Fixtures\Modules\Blog\Console\Commands\BlogPingCommand;
 use Laramod\Tests\Fixtures\Modules\Blog\Database\Seeders\BlogSettingsSeeder;
 use Laramod\Tests\Fixtures\Modules\Blog\Http\Middleware\AddBlogHeader;
 
-class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, ProvidesConfig, ProvidesGlobalMiddlewares, ProvidesMigrations, ProvidesRoutes, ProvidesSeeders, ProvidesTranslations, ProvidesViews
+class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, ProvidesConfig, ProvidesGlobalMiddlewares, ProvidesMigrations, ProvidesRoutes, ProvidesSeeders, ProvidesTranslations, ProvidesViews, ProvidesViteEntries
 {
     public function name(): string
     {
@@ -62,6 +63,11 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
     public function views(): string
     {
         return $this->path().'/resources/views';
+    }
+
+    public function viteEntries(): array
+    {
+        return [$this->path().'/resources/js/app.js', $this->path().'/resources/css/app.css'];
     }
 
     public function translations(): string

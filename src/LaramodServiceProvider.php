@@ -17,6 +17,7 @@ use Laramod\Console\Generators;
 use Laramod\Console\InitCommand;
 use Laramod\Console\ListCommand;
 use Laramod\Console\ModuleMakeCommand;
+use Laramod\Console\ViteCommand;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\ProvidesApiRoutes;
 use Laramod\Contracts\ProvidesCommands;
@@ -113,7 +114,7 @@ class LaramodServiceProvider extends ServiceProvider
                 $this->commands($module->commands());
             }
 
-            $this->commands([InitCommand::class, ListCommand::class, ModuleMakeCommand::class]);
+            $this->commands([InitCommand::class, ListCommand::class, ModuleMakeCommand::class, ViteCommand::class]);
 
             $this->bootGenerators();
             $this->bootPublishing();

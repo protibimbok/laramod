@@ -43,6 +43,7 @@ class ListCommandTest extends TestCase
                 'views' => true,
                 'translations' => true,
                 'config' => true,
+                'vite-entries' => true,
             ],
             'ai_workflow' => $path.'/ai-workflow/README.md',
             'publish_tags' => ['blog-views', 'blog-config', 'blog-lang', 'blog-migrations', 'blog-ai'],

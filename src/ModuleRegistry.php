@@ -15,6 +15,7 @@ use Laramod\Contracts\ProvidesRoutes;
 use Laramod\Contracts\ProvidesSeeders;
 use Laramod\Contracts\ProvidesTranslations;
 use Laramod\Contracts\ProvidesViews;
+use Laramod\Contracts\ProvidesViteEntries;
 use LogicException;
 
 class ModuleRegistry
@@ -34,6 +35,7 @@ class ModuleRegistry
         'views' => ProvidesViews::class,
         'translations' => ProvidesTranslations::class,
         'config' => ProvidesConfig::class,
+        'vite-entries' => ProvidesViteEntries::class,
     ];
 
     /**
