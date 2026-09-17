@@ -16,4 +16,12 @@ abstract class TestCase extends BaseTestCase
     {
         return [LaramodServiceProvider::class];
     }
+
+    /**
+     * Define the environment every test runs in.
+     */
+    protected function defineEnvironment($app): void
+    {
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+    }
 }
