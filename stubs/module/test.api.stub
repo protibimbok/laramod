@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }}\Tests\Feature;
+
+use Tests\TestCase;
+
+class {{ studly }}ModuleTest extends TestCase
+{
+    public function test_the_api_route_responds(): void
+    {
+        $this->getJson(route('{{ name }}.api.index'))
+            ->assertOk()
+            ->assertExactJson(['module' => '{{ name }}']);
+    }
+}

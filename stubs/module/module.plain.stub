@@ -1,0 +1,20 @@
+<?php
+
+namespace {{ namespace }};
+
+use Laramod\Contracts\Module;
+{{ orderedImport }}
+
+class {{ class }} implements Module{{ orderedContract }}
+{
+    public function name(): string
+    {
+        return '{{ name }}';
+    }
+
+{{ orderMethod }}
+    public function path(): string
+    {
+        return __DIR__;
+    }
+}

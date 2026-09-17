@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }}\Http\Controllers;
+
+use Illuminate\Http\Response;
+
+class {{ studly }}Controller
+{
+    public function index(): Response
+    {
+        return response(__('{{ name }}::messages.title'));
+    }
+}

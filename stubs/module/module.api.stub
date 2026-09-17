@@ -1,0 +1,39 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Routing\Router;
+use Laramod\Contracts\Module;
+{{ orderedImport }}
+use Laramod\Contracts\ProvidesApiRoutes;
+use Laramod\Contracts\ProvidesConfig;
+use Laramod\Contracts\ProvidesMigrations;
+
+class {{ class }} implements Module{{ orderedContract }}, ProvidesApiRoutes, ProvidesConfig, ProvidesMigrations
+{
+    public function name(): string
+    {
+        return '{{ name }}';
+    }
+
+{{ orderMethod }}
+    public function path(): string
+    {
+        return __DIR__;
+    }
+
+    public function apiRoutes(Router $router): void
+    {
+        require $this->path().'/routes/api.php';
+    }
+
+    public function migrations(): array
+    {
+        return [$this->path().'/Database/Migrations'];
+    }
+
+    public function config(): array
+    {
+        return ['{{ name }}' => $this->path().'/config/{{ name }}.php'];
+    }
+}

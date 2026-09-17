@@ -1,0 +1,7 @@
+<?php
+
+use Illuminate\Routing\Router;
+use {{ namespace }}\Http\Controllers\{{ studly }}Controller;
+
+/** @var Router $router */
+$router->get('/{{ name }}', [{{ studly }}Controller::class, 'index'])->name('{{ name }}.index');

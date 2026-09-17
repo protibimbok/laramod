@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }}\Http\Controllers\Api;
+
+use Illuminate\Http\JsonResponse;
+
+class {{ studly }}Controller
+{
+    public function index(): JsonResponse
+    {
+        return response()->json(['module' => '{{ name }}']);
+    }
+}
