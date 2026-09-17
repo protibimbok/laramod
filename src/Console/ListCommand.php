@@ -3,6 +3,7 @@
 namespace Laramod\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\Ordered;
@@ -38,6 +39,7 @@ class ListCommand extends Command
             'order' => $module instanceof Ordered ? $module->order() : 0,
             'capabilities' => $registry->capabilities($module),
             'ai_workflow' => is_file($readme = $module->path().'/ai-workflow/README.md') ? $readme : null,
+            'publish_tags' => $this->publishTags($module),
         ], $registry->all()));
 
         if ($this->option('json')) {
@@ -58,6 +60,8 @@ class ListCommand extends Command
             $this->components->twoColumnDetail('path', $this->relative($module['path']));
             $this->components->twoColumnDetail('order', (string) $module['order']);
 
+            $this->components->twoColumnDetail('vendor:publish tags', implode(', ', $module['publish_tags']) ?: 'none');
+
             foreach ([...$module['capabilities'], 'ai-workflow' => $module['ai_workflow'] !== null] as $capability => $provided) {
                 $this->line(sprintf(
                     '  <fg=%s>[%s]</> %s', $provided ? 'green' : 'red', $provided ? 'OK' : 'NO', $capability,
@@ -68,6 +72,19 @@ class ListCommand extends Command
         $this->newLine();
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Get the "vendor:publish" tags that are registered for the module.
+     *
+     * @return list<string>
+     */
+    protected function publishTags(Module $module): array
+    {
+        return array_values(array_intersect(
+            array_map(fn (string $kind): string => $module->name().'-'.$kind, ['views', 'config', 'lang', 'migrations']),
+            ServiceProvider::publishableGroups(),
+        ));
     }
 
     /**

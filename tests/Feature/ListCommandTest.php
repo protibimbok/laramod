@@ -44,6 +44,7 @@ class ListCommandTest extends TestCase
                 'config' => true,
             ],
             'ai_workflow' => null,
+            'publish_tags' => ['blog-views', 'blog-config', 'blog-lang', 'blog-migrations'],
         ]], json_decode(Artisan::output(), true));
     }
 
@@ -57,5 +58,6 @@ class ListCommandTest extends TestCase
         $this->assertStringContainsString(BlogModule::class, $output);
         $this->assertStringContainsString('[OK] seeders', $output);
         $this->assertStringContainsString('[NO] ai-workflow', $output);
+        $this->assertStringContainsString('blog-views, blog-config, blog-lang, blog-migrations', $output);
     }
 }

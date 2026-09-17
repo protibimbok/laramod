@@ -116,6 +116,7 @@ class LaramodServiceProvider extends ServiceProvider
             $this->commands([InitCommand::class, ListCommand::class, ModuleMakeCommand::class]);
 
             $this->bootGenerators();
+            $this->bootPublishing();
 
             $this->publishes([
                 __DIR__.'/../config/laramod.php' => $this->app->configPath('laramod.php'),
@@ -136,6 +137,39 @@ class LaramodServiceProvider extends ServiceProvider
             $this->app->extend($laravel, fn ($command, $app) => $generator === Generators\MigrateMakeCommand::class
                 ? new $generator($app['migration.creator'], $app['composer'])
                 : new $generator($app['files']));
+        }
+    }
+
+    /**
+     * Let "vendor:publish" copy what the modules provide into the application, one tag per module and kind.
+     */
+    protected function bootPublishing(): void
+    {
+        foreach ($this->modules(ProvidesViews::class) as $module) {
+            $this->publishes([
+                $module->views() => $this->app->resourcePath('views/vendor/'.$module->name()),
+            ], $module->name().'-views');
+        }
+
+        foreach ($this->modules(ProvidesConfig::class) as $module) {
+            $this->publishes(array_combine(
+                $module->config(),
+                array_map(fn (string $key): string => $this->app->configPath($key.'.php'), array_keys($module->config())),
+            ), $module->name().'-config');
+        }
+
+        foreach ($this->modules(ProvidesTranslations::class) as $module) {
+            $this->publishes([
+                $module->translations() => $this->app->langPath('vendor/'.$module->name()),
+            ], $module->name().'-lang');
+        }
+
+        // The file names are kept, so a published migration is the same migration and never runs twice.
+        foreach ($this->modules(ProvidesMigrations::class) as $module) {
+            $this->publishes(
+                array_fill_keys($module->migrations(), $this->app->databasePath('migrations')),
+                $module->name().'-migrations',
+            );
         }
     }
 
