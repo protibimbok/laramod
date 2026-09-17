@@ -3,6 +3,9 @@
 namespace Laramod;
 
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Foundation\Vite;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\Ordered;
@@ -132,6 +135,60 @@ class ModuleRegistry
     public function capabilities(Module $module): array
     {
         return array_map(fn (string $contract): bool => $module instanceof $contract, self::CAPABILITIES);
+    }
+
+    /**
+     * Get the entries the module wants Vite to build, named the way Vite's manifest names them:
+     * by their path from the project root.
+     *
+     * @return list<string>
+     */
+    public function viteEntries(Module $module): array
+    {
+        if (! $module instanceof ProvidesViteEntries) {
+            return [];
+        }
+
+        return array_map(fn (string $entry): string => $this->viteEntry($module, $entry), $module->viteEntries());
+    }
+
+    /**
+     * Get the tags that load the given entries of a module, like the "@vite" Blade directive does.
+     *
+     * @param  string|list<string>  $entries  Paths inside the module, as its viteEntries() method declares them.
+     */
+    public function vite(string $module, string|array $entries): HtmlString
+    {
+        $found = $this->find($module)
+            ?? throw new InvalidArgumentException(sprintf('Module [%s] is not registered.', $module));
+
+        $entries = array_map(fn (string $entry): string => $this->viteEntry($found, $entry), (array) $entries);
+
+        // An entry that is not declared is served by the dev server anyway and would only fail once it is built.
+        if ($missing = array_diff($entries, $this->viteEntries($found))) {
+            throw new InvalidArgumentException(sprintf(
+                'Entry [%s] is not declared by [%s::viteEntries()].', implode(', ', $missing), $found::class,
+            ));
+        }
+
+        return $this->container->make(Vite::class)($entries);
+    }
+
+    /**
+     * Get the path of a module's entry from the project root, with forward slashes.
+     * An entry is relative to the module, an absolute path is taken as it is.
+     */
+    protected function viteEntry(Module $module, string $entry): string
+    {
+        $normalize = fn (string $path): string => str_replace('\\', '/', $path);
+
+        $entry = $normalize($entry);
+
+        if (! str_starts_with($entry, '/') && ! preg_match('#^[A-Za-z]:/#', $entry)) {
+            $entry = rtrim($normalize($module->path()), '/').'/'.$entry;
+        }
+
+        return Str::chopStart($entry, rtrim($normalize($this->container->make('path.base')), '/').'/');
     }
 
     /**

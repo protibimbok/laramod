@@ -2,6 +2,7 @@
 
 namespace Laramod\Tests;
 
+use Laramod\Facades\Modules;
 use Laramod\LaramodServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -15,6 +16,16 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [LaramodServiceProvider::class];
+    }
+
+    /**
+     * Get the package aliases, the way composer.json registers them through package discovery.
+     *
+     * @return array<string, class-string>
+     */
+    protected function getPackageAliases($app): array
+    {
+        return ['Modules' => Modules::class];
     }
 
     /**

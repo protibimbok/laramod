@@ -14,6 +14,7 @@ This application is split into modules with `protibimbok/laramod`. A module is a
 - Class directories are StudlyCase (`Http`, `Models`, `Database/Migrations`, `Database/Factories`, `Database/Seeders`, `Tests/Feature`, `Tests/Unit`). Everything else is lowercase (`config`, `lang`, `resources`, `routes`, `ai-workflow`).
 - Views and translations are namespaced by the module name: `view('blog::posts.index')`, `__('blog::messages.title')`, and `x-blog::alert` for Blade components.
 - A module's config is read under the key its `config()` method declares, `modules.{name}` for generated modules: `config('modules.blog.per_page')`. Never use a top-level key that a framework config file already owns (`auth`, `cache`, `mail`, ...).
+- A module's Vite entries are declared in `viteEntries()` relative to the module (`resources/js/app.js`) and loaded in its views with `Modules::vite('blog', 'resources/js/app.js')`, never with a hard-coded `Modules/...` or `vendor/...` path.
 - Module routes must point to controller actions, never closures, so `route:cache` keeps working.
 - A module gains a capability by implementing the matching contract on its module class, e.g. `ProvidesCommands::commands()`. New commands, global middleware, seeders and config files are registered there.
 - Factories are linked explicitly: `#[UseFactory(PostFactory::class)]` on the model and `$model` on the factory. The generators do this for you.

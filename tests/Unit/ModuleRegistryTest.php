@@ -8,6 +8,7 @@ use Laramod\Contracts\Module;
 use Laramod\Contracts\Ordered;
 use Laramod\Contracts\ProvidesMigrations;
 use Laramod\Contracts\ProvidesViews;
+use Laramod\Contracts\ProvidesViteEntries;
 use Laramod\ModuleRegistry;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -74,6 +75,50 @@ class ModuleRegistryTest extends TestCase
             ['migrations', 'views'],
             array_keys(array_filter($registry->capabilities($blog))),
         );
+    }
+
+    public function test_vite_entries_are_named_by_their_path_from_the_project_root(): void
+    {
+        $container = new Container;
+        $container->instance('path.base', '/var/www/app');
+
+        $registry = new ModuleRegistry($container);
+
+        $entries = fn (string $path, array $declared): array => $registry->viteEntries(
+            new class($path, $declared) implements Module, ProvidesViteEntries
+            {
+                public function __construct(protected string $path, protected array $declared) {}
+
+                public function name(): string
+                {
+                    return 'blog';
+                }
+
+                public function path(): string
+                {
+                    return $this->path;
+                }
+
+                public function viteEntries(): array
+                {
+                    return $this->declared;
+                }
+            }
+        );
+
+        $this->assertSame(
+            ['Modules/Blog/resources/js/app.js', 'Modules/Blog/resources/css/app.css'],
+            $entries('/var/www/app/Modules/Blog', ['resources/js/app.js', '/var/www/app/Modules/Blog/resources/css/app.css']),
+        );
+        $this->assertSame(
+            ['vendor/acme/blog/resources/js/app.js'],
+            $entries('/var/www/app/vendor/acme/blog', ['resources/js/app.js']),
+        );
+        $this->assertSame(
+            ['C:/elsewhere/Blog/resources/js/app.js', 'C:/elsewhere/Blog/resources/js/admin.js'],
+            $entries('C:\\elsewhere\\Blog', ['resources/js/app.js', 'C:\\elsewhere\\Blog\\resources\\js\\admin.js']),
+        );
+        $this->assertSame([], $registry->viteEntries($this->module('plain')));
     }
 
     public function test_two_modules_cannot_share_a_name(): void

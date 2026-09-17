@@ -5,7 +5,6 @@ namespace Laramod\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Laramod\Contracts\Module;
-use Laramod\Contracts\ProvidesViteEntries;
 use Laramod\ModuleRegistry;
 use ReflectionClass;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,9 +36,7 @@ class ViteCommand extends Command
             'path' => $this->relative($module->path()),
             // The entries are declared in the module class, so the plugin restarts Vite when that file changes.
             'file' => $this->relative((string) (new ReflectionClass($module))->getFileName()),
-            'entries' => array_map(
-                $this->relative(...), $module instanceof ProvidesViteEntries ? $module->viteEntries() : [],
-            ),
+            'entries' => $registry->viteEntries($module),
         ], $registry->all()));
 
         $this->line(json_encode(['modules' => $modules], JSON_UNESCAPED_SLASHES));

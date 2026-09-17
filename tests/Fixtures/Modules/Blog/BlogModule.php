@@ -67,7 +67,7 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
 
     public function viteEntries(): array
     {
-        return [$this->path().'/resources/js/app.js', $this->path().'/resources/css/app.css'];
+        return ['resources/js/app.js', $this->path().'/resources/css/app.css'];
     }
 
     public function translations(): string

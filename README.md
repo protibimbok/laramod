@@ -118,7 +118,7 @@ A module gains a capability by implementing its contract from `Laramod\Contracts
 | `ProvidesViews` | `views(): string` | View and Blade component namespace, `blog::…` |
 | `ProvidesTranslations` | `translations(): string` | Translation namespace, `blog::…`, and JSON translations |
 | `ProvidesConfig` | `config(): array` | Config files, keyed by the key they are merged into |
-| `ProvidesViteEntries` | `viteEntries(): array` | Source files Vite builds, see [Vite](#vite) |
+| `ProvidesViteEntries` | `viteEntries(): array` | Source files Vite builds, relative to the module, see [Vite](#vite) |
 | `Ordered` | `order(): int` | Lower is wired first, a negative order last, ties keep the registration order |
 
 Views, translations and components use the module name as their namespace:
@@ -208,16 +208,22 @@ A module only has the tags for what it provides. Published views and translation
 
 [`laramod-vite-plugin`](https://github.com/protibimbok/laramod-vite-plugin) builds the entries the modules declare, reloads the page when module views or routes change and adds an `@<module>` alias for every module.
 
+A module declares its entries relative to itself and loads them the same way, so a view works wherever the module is installed:
+
 ```php
 public function viteEntries(): array
 {
-    return [$this->path().'/resources/js/app.js'];
+    return ['resources/js/app.js'];
 }
 ```
 
 ```blade
-@vite('Modules/Blog/resources/js/app.js')
+{{ Modules::vite('blog', 'resources/js/app.js') }}
 ```
+
+`Modules::vite()` returns what `@vite` returns. In Vite's manifest an entry is named by its path from the project root, `Modules/Blog/resources/js/app.js` or `vendor/acme/blog/resources/js/app.js`, and the application's own views may use that path with the stock `@vite` directive. Loading an entry the module does not declare is an error, because the dev server would serve it while the build would not contain it.
+
+The JavaScript of an installed module can only import npm packages the application has installed itself.
 
 ## AI workflow
 
