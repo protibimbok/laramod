@@ -1,12 +1,13 @@
 <?php
 
-namespace Laramod;
+namespace Laramod\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Laramod\Contracts\Module;
+use Laramod\ModuleRegistry;
 
 /**
- * @method static \Laramod\ModuleRegistry register(iterable<class-string<Module>|Module>|string|Module $modules)
+ * @method static ModuleRegistry register(iterable<class-string<Module>|Module>|string|Module $modules)
  * @method static array<string, Module> all()
  * @method static array<string, Module> providing(string $contract)
  * @method static Module|null find(string $name)

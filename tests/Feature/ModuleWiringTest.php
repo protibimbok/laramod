@@ -3,8 +3,8 @@
 namespace Laramod\Tests\Feature;
 
 use Illuminate\Support\Facades\Route;
+use Laramod\Facades\Modules;
 use Laramod\ModuleRegistry;
-use Laramod\Modules;
 use Laramod\Tests\Fixtures\Modules\Blog\BlogModule;
 use Laramod\Tests\TestCase;
 

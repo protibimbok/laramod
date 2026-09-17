@@ -10,12 +10,14 @@ use Laramod\Contracts\ProvidesConfig;
 use Laramod\Contracts\ProvidesGlobalMiddlewares;
 use Laramod\Contracts\ProvidesMigrations;
 use Laramod\Contracts\ProvidesRoutes;
+use Laramod\Contracts\ProvidesSeeders;
 use Laramod\Contracts\ProvidesTranslations;
 use Laramod\Contracts\ProvidesViews;
 use Laramod\Tests\Fixtures\Modules\Blog\Console\Commands\BlogPingCommand;
+use Laramod\Tests\Fixtures\Modules\Blog\Database\Seeders\BlogSettingsSeeder;
 use Laramod\Tests\Fixtures\Modules\Blog\Http\Middleware\AddBlogHeader;
 
-class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, ProvidesConfig, ProvidesGlobalMiddlewares, ProvidesMigrations, ProvidesRoutes, ProvidesTranslations, ProvidesViews
+class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, ProvidesConfig, ProvidesGlobalMiddlewares, ProvidesMigrations, ProvidesRoutes, ProvidesSeeders, ProvidesTranslations, ProvidesViews
 {
     public function name(): string
     {
@@ -45,6 +47,11 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
     public function migrations(): array
     {
         return [$this->path().'/Database/Migrations'];
+    }
+
+    public function seeders(): array
+    {
+        return [BlogSettingsSeeder::class];
     }
 
     public function commands(): array

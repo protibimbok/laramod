@@ -2,7 +2,7 @@
 
 namespace Laramod\Tests\Feature;
 
-use Laramod\Modules;
+use Laramod\Facades\Modules;
 use Laramod\Tests\Fixtures\Modules\Blog\BlogModule;
 use Laramod\Tests\TestCase;
 

@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
 use Laramod\Console\InitCommand;
+use Laramod\Console\ListCommand;
 use Laramod\Contracts\Module;
 use Laramod\Contracts\ProvidesApiRoutes;
 use Laramod\Contracts\ProvidesCommands;
@@ -67,7 +68,7 @@ class LaramodServiceProvider extends ServiceProvider
                 $this->commands($module->commands());
             }
 
-            $this->commands([InitCommand::class]);
+            $this->commands([InitCommand::class, ListCommand::class]);
 
             $this->publishes([
                 __DIR__.'/../config/laramod.php' => $this->app->configPath('laramod.php'),

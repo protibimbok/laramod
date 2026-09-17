@@ -3,9 +3,9 @@
 namespace Laramod\Tests\Feature;
 
 use Illuminate\Support\ServiceProvider;
+use Laramod\Facades\Modules;
 use Laramod\LaramodServiceProvider;
 use Laramod\ModuleRegistry;
-use Laramod\Modules;
 use Laramod\Tests\TestCase;
 
 class ServiceProviderTest extends TestCase
