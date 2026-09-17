@@ -97,6 +97,7 @@ class ModuleMakeCommand extends Command
             'routes/api.php' => 'routes.api.stub',
             'config/'.$name.'.php' => 'config.stub',
             'Database/Migrations/.gitkeep' => null,
+            'ai-workflow/README.md' => 'ai-workflow.stub',
         ];
 
         if ($this->option('api')) {

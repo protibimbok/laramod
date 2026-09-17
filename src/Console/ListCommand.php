@@ -3,6 +3,7 @@
 namespace Laramod\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laramod\Contracts\Module;
@@ -38,7 +39,7 @@ class ListCommand extends Command
             'path' => $module->path(),
             'order' => $module instanceof Ordered ? $module->order() : 0,
             'capabilities' => $registry->capabilities($module),
-            'ai_workflow' => is_file($readme = $module->path().'/ai-workflow/README.md') ? $readme : null,
+            'ai_workflow' => $this->aiWorkflow($module),
             'publish_tags' => $this->publishTags($module),
         ], $registry->all()));
 
@@ -75,6 +76,19 @@ class ListCommand extends Command
     }
 
     /**
+     * Get the entry point of the module's AI workflow, preferring the copy the application published.
+     */
+    protected function aiWorkflow(Module $module): ?string
+    {
+        $readmes = [
+            $this->laravel->basePath('.ai/modules/'.$module->name().'/README.md'),
+            $module->path().'/ai-workflow/README.md',
+        ];
+
+        return Arr::first($readmes, fn (string $readme): bool => is_file($readme));
+    }
+
+    /**
      * Get the "vendor:publish" tags that are registered for the module.
      *
      * @return list<string>
@@ -82,7 +96,7 @@ class ListCommand extends Command
     protected function publishTags(Module $module): array
     {
         return array_values(array_intersect(
-            array_map(fn (string $kind): string => $module->name().'-'.$kind, ['views', 'config', 'lang', 'migrations']),
+            array_map(fn (string $kind): string => $module->name().'-'.$kind, ['views', 'config', 'lang', 'migrations', 'ai']),
             ServiceProvider::publishableGroups(),
         ));
     }

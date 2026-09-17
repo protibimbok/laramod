@@ -68,6 +68,7 @@ class ModuleMakeCommandTest extends TestCase
                 'Http/Controllers/Api/BlogController.php',
                 'Http/Controllers/BlogController.php',
                 'Tests/Feature/BlogModuleTest.php',
+                'ai-workflow/README.md',
                 'config/blog.php',
                 'lang/en/messages.php',
                 'routes/api.php',
@@ -78,6 +79,7 @@ class ModuleMakeCommandTest extends TestCase
                 'Database/Migrations/.gitkeep',
                 'Http/Controllers/Api/BillingController.php',
                 'Tests/Feature/BillingModuleTest.php',
+                'ai-workflow/README.md',
                 'config/billing.php',
                 'routes/api.php',
             ], ['api', 'migrations', 'config']],
@@ -100,6 +102,7 @@ class ModuleMakeCommandTest extends TestCase
             file_get_contents($path.'/Http/Controllers/UserProfileController.php'),
         );
         $this->assertSame(['title' => 'User Profile'], require $path.'/lang/en/messages.php');
+        $this->assertStringStartsWith("# User Profile Module\n", file_get_contents($path.'/ai-workflow/README.md'));
         $this->assertStringContainsString("['user-profile' => \$this->path().'/config/user-profile.php']", file_get_contents($path.'/UserProfileModule.php'));
 
         foreach ($this->files('Modules/UserProfile') as $file) {

@@ -57,6 +57,7 @@ class PublishingTest extends TestCase
             'config' => ['blog-config', ['/config/blog.php' => fn () => config_path('blog.php')]],
             'lang' => ['blog-lang', ['/lang' => fn () => lang_path('vendor/blog')]],
             'migrations' => ['blog-migrations', ['/Database/Migrations' => fn () => database_path('migrations')]],
+            'ai workflow' => ['blog-ai', ['/ai-workflow' => fn () => base_path('.ai/modules/blog')]],
         ];
     }
 

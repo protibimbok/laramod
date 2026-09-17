@@ -1,0 +1,19 @@
+# {{ title }} Module
+
+Entry point for AI agents. Read this before changing the module or using its classes from elsewhere.
+
+## Purpose
+
+What this module is responsible for, and what it deliberately is not.
+
+## Public Surface
+
+What the application and other modules may rely on: routes, events, contracts, config keys. Everything else is internal and may change.
+
+## Conventions
+
+Rules that only apply inside this module.
+
+## Workflows
+
+Step-by-step guides for recurring tasks live in `workflows/*.md`. List each one here with a line on when to use it.

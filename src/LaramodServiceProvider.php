@@ -164,6 +164,13 @@ class LaramodServiceProvider extends ServiceProvider
             ], $module->name().'-lang');
         }
 
+        // A published workflow is the application's own copy of the module's guidance, and "laramod:list" prefers it.
+        foreach ($this->app->make(ModuleRegistry::class)->all() as $module) {
+            if (is_dir($workflow = $module->path().'/ai-workflow')) {
+                $this->publishes([$workflow => $this->app->basePath('.ai/modules/'.$module->name())], $module->name().'-ai');
+            }
+        }
+
         // The file names are kept, so a published migration is the same migration and never runs twice.
         foreach ($this->modules(ProvidesMigrations::class) as $module) {
             $this->publishes(
