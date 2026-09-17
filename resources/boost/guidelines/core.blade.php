@@ -12,7 +12,8 @@ This application is split into modules with `protibimbok/laramod`. A module is a
 - Modules are listed explicitly in `bootstrap/modules.php`. The order of the list is the order they are wired in. Create a module with `{{ $assist->artisanCommand('make:module Blog') }}` (`--api`, `--plain`, `--order=`).
 - Create files inside a module with the usual generators and the `--module` option, e.g. `{{ $assist->artisanCommand('make:model Post -mf --module=Blog') }}`. Do not create them in `app/` and move them.
 - Class directories are StudlyCase (`Http`, `Models`, `Database/Migrations`, `Database/Factories`, `Database/Seeders`, `Tests/Feature`, `Tests/Unit`). Everything else is lowercase (`config`, `lang`, `resources`, `routes`, `ai-workflow`).
-- Views, translations and config are namespaced by the module name: `view('blog::posts.index')`, `__('blog::messages.title')`, and `x-blog::alert` for Blade components.
+- Views and translations are namespaced by the module name: `view('blog::posts.index')`, `__('blog::messages.title')`, and `x-blog::alert` for Blade components.
+- A module's config is read under the key its `config()` method declares, `modules.{name}` for generated modules: `config('modules.blog.per_page')`. Never use a top-level key that a framework config file already owns (`auth`, `cache`, `mail`, ...).
 - Module routes must point to controller actions, never closures, so `route:cache` keeps working.
 - A module gains a capability by implementing the matching contract on its module class, e.g. `ProvidesCommands::commands()`. New commands, global middleware, seeders and config files are registered there.
 - Factories are linked explicitly: `#[UseFactory(PostFactory::class)]` on the model and `$model` on the factory. The generators do this for you.

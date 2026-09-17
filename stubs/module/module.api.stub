@@ -34,6 +34,6 @@ class {{ class }} implements Module{{ orderedContract }}, ProvidesApiRoutes, Pro
 
     public function config(): array
     {
-        return ['{{ name }}' => $this->path().'/config/{{ name }}.php'];
+        return ['modules.{{ name }}' => $this->path().'/config/{{ name }}.php'];
     }
 }

@@ -9,6 +9,7 @@ use Laramod\LaramodServiceProvider;
 use Laramod\ModuleRegistry;
 use Laramod\Tests\Fixtures\Modules\Blog\BlogModule;
 use Laramod\Tests\Fixtures\Modules\Scratch\ScratchModule;
+use Laramod\Tests\Fixtures\Modules\Settings\SettingsModule;
 use Laramod\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -26,7 +27,7 @@ class PublishingTest extends TestCase
         $app->useDatabasePath(sys_get_temp_dir().'/laramod-published');
 
         $app->afterResolving(ModuleRegistry::class, function (ModuleRegistry $registry): void {
-            $registry->register([BlogModule::class, ScratchModule::class]);
+            $registry->register([BlogModule::class, ScratchModule::class, SettingsModule::class]);
         });
     }
 
@@ -59,6 +60,16 @@ class PublishingTest extends TestCase
             'migrations' => ['blog-migrations', ['/Database/Migrations' => fn () => database_path('migrations')]],
             'ai workflow' => ['blog-ai', ['/ai-workflow' => fn () => base_path('.ai/modules/blog')]],
         ];
+    }
+
+    public function test_a_dotted_config_key_is_merged_and_published_as_a_nested_file(): void
+    {
+        $this->assertSame('light', config('modules.settings.theme'));
+
+        $this->assertSame(
+            [(new SettingsModule)->path().'/config/settings.php' => config_path('modules/settings.php')],
+            ServiceProvider::pathsToPublish(LaramodServiceProvider::class, 'settings-config'),
+        );
     }
 
     public function test_a_module_has_no_tags_for_what_it_does_not_provide(): void

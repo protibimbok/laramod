@@ -155,7 +155,8 @@ class LaramodServiceProvider extends ServiceProvider
         foreach ($this->modules(ProvidesConfig::class) as $module) {
             $this->publishes(array_combine(
                 $module->config(),
-                array_map(fn (string $key): string => $this->app->configPath($key.'.php'), array_keys($module->config())),
+                // A dotted key is a nested config file: "modules.blog" is read from config/modules/blog.php.
+                array_map(fn (string $key): string => $this->app->configPath(str_replace('.', '/', $key).'.php'), array_keys($module->config())),
             ), $module->name().'-config');
         }
 

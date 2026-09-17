@@ -103,7 +103,7 @@ class ModuleMakeCommandTest extends TestCase
         );
         $this->assertSame(['title' => 'User Profile'], require $path.'/lang/en/messages.php');
         $this->assertStringStartsWith("# User Profile Module\n", file_get_contents($path.'/ai-workflow/README.md'));
-        $this->assertStringContainsString("['user-profile' => \$this->path().'/config/user-profile.php']", file_get_contents($path.'/UserProfileModule.php'));
+        $this->assertStringContainsString("['modules.user-profile' => \$this->path().'/config/user-profile.php']", file_get_contents($path.'/UserProfileModule.php'));
 
         foreach ($this->files('Modules/UserProfile') as $file) {
             $this->assertStringNotContainsString('{{ ', file_get_contents($path.'/'.$file), $file);
