@@ -2,13 +2,18 @@
 
 namespace Laramod;
 
+use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\CachesRoutes;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Database\Console as DatabaseConsole;
+use Illuminate\Foundation\Console as FoundationConsole;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Routing\Console as RoutingConsole;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
+use Laramod\Console\Generators;
 use Laramod\Console\InitCommand;
 use Laramod\Console\ListCommand;
 use Laramod\Console\ModuleMakeCommand;
@@ -24,6 +29,45 @@ use Laramod\Contracts\ProvidesViews;
 
 class LaramodServiceProvider extends ServiceProvider
 {
+    /**
+     * Laravel's generators and the ones that replace them to accept the "module" option.
+     *
+     * @var array<class-string<Command>, class-string<Command>>
+     */
+    protected const array GENERATORS = [
+        FoundationConsole\CastMakeCommand::class => Generators\CastMakeCommand::class,
+        FoundationConsole\ChannelMakeCommand::class => Generators\ChannelMakeCommand::class,
+        FoundationConsole\ClassMakeCommand::class => Generators\ClassMakeCommand::class,
+        FoundationConsole\ComponentMakeCommand::class => Generators\ComponentMakeCommand::class,
+        FoundationConsole\ConfigMakeCommand::class => Generators\ConfigMakeCommand::class,
+        FoundationConsole\ConsoleMakeCommand::class => Generators\ConsoleMakeCommand::class,
+        RoutingConsole\ControllerMakeCommand::class => Generators\ControllerMakeCommand::class,
+        FoundationConsole\EnumMakeCommand::class => Generators\EnumMakeCommand::class,
+        FoundationConsole\EventMakeCommand::class => Generators\EventMakeCommand::class,
+        FoundationConsole\ExceptionMakeCommand::class => Generators\ExceptionMakeCommand::class,
+        DatabaseConsole\Factories\FactoryMakeCommand::class => Generators\FactoryMakeCommand::class,
+        FoundationConsole\InterfaceMakeCommand::class => Generators\InterfaceMakeCommand::class,
+        FoundationConsole\JobMakeCommand::class => Generators\JobMakeCommand::class,
+        FoundationConsole\JobMiddlewareMakeCommand::class => Generators\JobMiddlewareMakeCommand::class,
+        FoundationConsole\ListenerMakeCommand::class => Generators\ListenerMakeCommand::class,
+        FoundationConsole\MailMakeCommand::class => Generators\MailMakeCommand::class,
+        RoutingConsole\MiddlewareMakeCommand::class => Generators\MiddlewareMakeCommand::class,
+        DatabaseConsole\Migrations\MigrateMakeCommand::class => Generators\MigrateMakeCommand::class,
+        FoundationConsole\ModelMakeCommand::class => Generators\ModelMakeCommand::class,
+        FoundationConsole\NotificationMakeCommand::class => Generators\NotificationMakeCommand::class,
+        FoundationConsole\ObserverMakeCommand::class => Generators\ObserverMakeCommand::class,
+        FoundationConsole\PolicyMakeCommand::class => Generators\PolicyMakeCommand::class,
+        FoundationConsole\ProviderMakeCommand::class => Generators\ProviderMakeCommand::class,
+        FoundationConsole\RequestMakeCommand::class => Generators\RequestMakeCommand::class,
+        FoundationConsole\ResourceMakeCommand::class => Generators\ResourceMakeCommand::class,
+        FoundationConsole\RuleMakeCommand::class => Generators\RuleMakeCommand::class,
+        FoundationConsole\ScopeMakeCommand::class => Generators\ScopeMakeCommand::class,
+        DatabaseConsole\Seeds\SeederMakeCommand::class => Generators\SeederMakeCommand::class,
+        FoundationConsole\TestMakeCommand::class => Generators\TestMakeCommand::class,
+        FoundationConsole\TraitMakeCommand::class => Generators\TraitMakeCommand::class,
+        FoundationConsole\ViewMakeCommand::class => Generators\ViewMakeCommand::class,
+    ];
+
     /**
      * Register the module registry and the application's modules.
      */
@@ -71,6 +115,8 @@ class LaramodServiceProvider extends ServiceProvider
 
             $this->commands([InitCommand::class, ListCommand::class, ModuleMakeCommand::class]);
 
+            $this->bootGenerators();
+
             $this->publishes([
                 __DIR__.'/../config/laramod.php' => $this->app->configPath('laramod.php'),
             ], 'laramod-config');
@@ -78,6 +124,18 @@ class LaramodServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../stubs/module' => $this->app->basePath('stubs/laramod/module'),
             ], 'laramod-stubs');
+        }
+    }
+
+    /**
+     * Replace Laravel's "make:*" generators with the ones that accept the "module" option.
+     */
+    protected function bootGenerators(): void
+    {
+        foreach (self::GENERATORS as $laravel => $generator) {
+            $this->app->extend($laravel, fn ($command, $app) => $generator === Generators\MigrateMakeCommand::class
+                ? new $generator($app['migration.creator'], $app['composer'])
+                : new $generator($app['files']));
         }
     }
 
