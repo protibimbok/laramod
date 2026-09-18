@@ -28,8 +28,9 @@ class MigrateMakeCommand extends BaseCommand
             return parent::getMigrationPath();
         }
 
-        return $module instanceof ProvidesMigrations && $module->migrations() !== []
-            ? $module->migrations()[0]
-            : $module->path().'/Database/Migrations';
+        return $this->modulePath(
+            $module,
+            $module instanceof ProvidesMigrations && $module->migrations() !== [] ? $module->migrations()[0] : 'Database/Migrations',
+        );
     }
 }

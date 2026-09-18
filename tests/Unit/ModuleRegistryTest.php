@@ -121,6 +121,17 @@ class ModuleRegistryTest extends TestCase
         $this->assertSame([], $registry->viteEntries($this->module('plain')));
     }
 
+    public function test_a_path_is_relative_to_the_module_unless_it_is_absolute(): void
+    {
+        $registry = $this->registry();
+        $module = $this->module('blog');
+
+        $this->assertSame('/modules/blog/resources/views', $registry->path($module, 'resources/views'));
+        $this->assertSame('/elsewhere/views', $registry->path($module, '/elsewhere/views'));
+        $this->assertSame('C:\\elsewhere\\views', $registry->path($module, 'C:\\elsewhere\\views'));
+        $this->assertSame('C:/elsewhere/views', $registry->path($module, 'C:/elsewhere/views'));
+    }
+
     public function test_two_modules_cannot_share_a_name(): void
     {
         $registry = $this->registry()->register($this->module('blog'));

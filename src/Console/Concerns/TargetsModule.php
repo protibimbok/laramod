@@ -53,7 +53,7 @@ trait TargetsModule
             return parent::viewPath($path);
         }
 
-        $views = $module instanceof ProvidesViews ? $module->views() : $module->path().'/resources/views';
+        $views = $this->modulePath($module, $module instanceof ProvidesViews ? $module->views() : 'resources/views');
 
         return $views.($path ? DIRECTORY_SEPARATOR.$path : $path);
     }

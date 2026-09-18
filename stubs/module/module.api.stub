@@ -24,16 +24,16 @@ class {{ class }} implements Module{{ orderedContract }}, ProvidesApiRoutes, Pro
 
     public function apiRoutes(Router $router): void
     {
-        require $this->path().'/routes/api.php';
+        require __DIR__.'/routes/api.php';
     }
 
     public function migrations(): array
     {
-        return [$this->path().'/Database/Migrations'];
+        return ['Database/Migrations'];
     }
 
     public function config(): array
     {
-        return ['modules.{{ name }}' => $this->path().'/config/{{ name }}.php'];
+        return ['modules.{{ name }}' => 'config/{{ name }}.php'];
     }
 }

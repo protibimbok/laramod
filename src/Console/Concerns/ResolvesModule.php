@@ -62,6 +62,14 @@ trait ResolvesModule
     }
 
     /**
+     * Get the absolute path of what the module declares relative to itself.
+     */
+    protected function modulePath(Module $module, string $path): string
+    {
+        return $this->laravel->make(ModuleRegistry::class)->path($module, $path);
+    }
+
+    /**
      * Get the namespace the module's classes live in.
      */
     protected function moduleNamespace(Module $module): string

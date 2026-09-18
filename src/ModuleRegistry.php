@@ -138,6 +138,19 @@ class ModuleRegistry
     }
 
     /**
+     * Get the absolute path of what a module declares: "resources/views" is relative to the module,
+     * an absolute path is taken as it is.
+     */
+    public function path(Module $module, string $path): string
+    {
+        if (preg_match('#^([A-Za-z]:)?[/\\\\]#', $path)) {
+            return $path;
+        }
+
+        return rtrim($module->path(), '/\\').'/'.$path;
+    }
+
+    /**
      * Get the entries the module wants Vite to build, named the way Vite's manifest names them:
      * by their path from the project root.
      *
@@ -182,13 +195,7 @@ class ModuleRegistry
     {
         $normalize = fn (string $path): string => str_replace('\\', '/', $path);
 
-        $entry = $normalize($entry);
-
-        if (! str_starts_with($entry, '/') && ! preg_match('#^[A-Za-z]:/#', $entry)) {
-            $entry = rtrim($normalize($module->path()), '/').'/'.$entry;
-        }
-
-        return Str::chopStart($entry, rtrim($normalize($this->container->make('path.base')), '/').'/');
+        return Str::chopStart($normalize($this->path($module, $entry)), rtrim($normalize($this->container->make('path.base')), '/').'/');
     }
 
     /**

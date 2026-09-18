@@ -19,12 +19,12 @@ class BlogModule implements Module, ProvidesRoutes, ProvidesMigrations
 
     public function routes(Router $router): void
     {
-        require $this->path().'/routes/web.php';
+        require __DIR__.'/routes/web.php';
     }
 
     public function migrations(): array
     {
-        return [$this->path().'/Database/Migrations'];
+        return ['Database/Migrations'];
     }
 }
 ```
@@ -107,6 +107,8 @@ Modules::register([BlogModule::class]);
 
 A module gains a capability by implementing its contract from `Laramod\Contracts`. Nothing is looked up on disk: a module without `ProvidesViews` has no views, whatever its directories contain.
 
+A path a module returns is relative to its `path()`: `'resources/views'`. An absolute path is taken as it is.
+
 | Contract | Method | Wired as |
 | --- | --- | --- |
 | `ProvidesRoutes` | `routes(Router $router): void` | Routes inside the `web` group of `config/laramod.php` |
@@ -145,7 +147,7 @@ Generated modules merge their config under `modules.<name>`:
 ```php
 public function config(): array
 {
-    return ['modules.blog' => $this->path().'/config/blog.php'];
+    return ['modules.blog' => 'config/blog.php'];
 }
 ```
 

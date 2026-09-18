@@ -85,7 +85,7 @@ class LaramodServiceProvider extends ServiceProvider
         $this->app->booting(function (): void {
             foreach ($this->modules(ProvidesConfig::class) as $module) {
                 foreach ($module->config() as $key => $path) {
-                    $this->mergeConfigFrom($path, $key);
+                    $this->mergeConfigFrom($this->path($module, $path), $key);
                 }
             }
         });
@@ -101,12 +101,12 @@ class LaramodServiceProvider extends ServiceProvider
         $this->bootViews();
 
         foreach ($this->modules(ProvidesTranslations::class) as $module) {
-            $this->loadTranslationsFrom($module->translations(), $module->name());
-            $this->loadJsonTranslationsFrom($module->translations());
+            $this->loadTranslationsFrom($translations = $this->path($module, $module->translations()), $module->name());
+            $this->loadJsonTranslationsFrom($translations);
         }
 
         foreach ($this->modules(ProvidesMigrations::class) as $module) {
-            $this->loadMigrationsFrom($module->migrations());
+            $this->loadMigrationsFrom($this->paths($module, $module->migrations()));
         }
 
         if ($this->app->runningInConsole()) {
@@ -148,13 +148,13 @@ class LaramodServiceProvider extends ServiceProvider
     {
         foreach ($this->modules(ProvidesViews::class) as $module) {
             $this->publishes([
-                $module->views() => $this->app->resourcePath('views/vendor/'.$module->name()),
+                $this->path($module, $module->views()) => $this->app->resourcePath('views/vendor/'.$module->name()),
             ], $module->name().'-views');
         }
 
         foreach ($this->modules(ProvidesConfig::class) as $module) {
             $this->publishes(array_combine(
-                $module->config(),
+                $this->paths($module, $module->config()),
                 // A dotted key is a nested config file: "modules.blog" is read from config/modules/blog.php.
                 array_map(fn (string $key): string => $this->app->configPath(str_replace('.', '/', $key).'.php'), array_keys($module->config())),
             ), $module->name().'-config');
@@ -162,7 +162,7 @@ class LaramodServiceProvider extends ServiceProvider
 
         foreach ($this->modules(ProvidesTranslations::class) as $module) {
             $this->publishes([
-                $module->translations() => $this->app->langPath('vendor/'.$module->name()),
+                $this->path($module, $module->translations()) => $this->app->langPath('vendor/'.$module->name()),
             ], $module->name().'-lang');
         }
 
@@ -176,7 +176,7 @@ class LaramodServiceProvider extends ServiceProvider
         // The file names are kept, so a published migration is the same migration and never runs twice.
         foreach ($this->modules(ProvidesMigrations::class) as $module) {
             $this->publishes(
-                array_fill_keys($module->migrations(), $this->app->databasePath('migrations')),
+                array_fill_keys($this->paths($module, $module->migrations()), $this->app->databasePath('migrations')),
                 $module->name().'-migrations',
             );
         }
@@ -231,17 +231,38 @@ class LaramodServiceProvider extends ServiceProvider
         $modules = $this->modules(ProvidesViews::class);
 
         foreach ($modules as $module) {
-            $this->loadViewsFrom($module->views(), $module->name());
+            $this->loadViewsFrom($this->path($module, $module->views()), $module->name());
         }
 
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade) use ($modules): void {
             foreach ($modules as $module) {
-                $blade->anonymousComponentPath($module->views().'/components', $module->name());
+                $blade->anonymousComponentPath($this->path($module, $module->views()).'/components', $module->name());
                 $blade->componentNamespace(
                     Str::beforeLast($module::class, '\\').'\\View\\Components', $module->name()
                 );
             }
         });
+    }
+
+    /**
+     * Get the absolute path of what a module declares relative to itself.
+     */
+    protected function path(Module $module, string $path): string
+    {
+        return $this->app->make(ModuleRegistry::class)->path($module, $path);
+    }
+
+    /**
+     * Get the absolute paths of what a module declares relative to itself, keeping the keys.
+     *
+     * @template TKey of array-key
+     *
+     * @param  array<TKey, string>  $paths
+     * @return array<TKey, string>
+     */
+    protected function paths(Module $module, array $paths): array
+    {
+        return array_map(fn (string $path): string => $this->path($module, $path), $paths);
     }
 
     /**

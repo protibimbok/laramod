@@ -12,7 +12,7 @@ interface Module
     public function name(): string;
 
     /**
-     * Get the absolute path to the module's root directory.
+     * Get the absolute path to the module's root directory. The paths the module provides are relative to it.
      */
     public function path(): string;
 }

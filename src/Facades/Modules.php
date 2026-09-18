@@ -14,6 +14,7 @@ use Laramod\ModuleRegistry;
  * @method static Module|null find(string $name)
  * @method static bool has(string $name)
  * @method static array<string, bool> capabilities(Module $module)
+ * @method static string path(Module $module, string $path)
  * @method static list<string> viteEntries(Module $module)
  * @method static HtmlString vite(string $module, string|array $entries)
  *

@@ -32,12 +32,12 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
 
     public function routes(Router $router): void
     {
-        require $this->path().'/routes/web.php';
+        require __DIR__.'/routes/web.php';
     }
 
     public function apiRoutes(Router $router): void
     {
-        require $this->path().'/routes/api.php';
+        require __DIR__.'/routes/api.php';
     }
 
     public function globalMiddlewares(): array
@@ -47,7 +47,7 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
 
     public function migrations(): array
     {
-        return [$this->path().'/Database/Migrations'];
+        return ['Database/Migrations'];
     }
 
     public function seeders(): array
@@ -62,21 +62,21 @@ class BlogModule implements Module, ProvidesApiRoutes, ProvidesCommands, Provide
 
     public function views(): string
     {
-        return $this->path().'/resources/views';
+        return 'resources/views';
     }
 
     public function viteEntries(): array
     {
-        return ['resources/js/app.js', $this->path().'/resources/css/app.css'];
+        return ['resources/js/app.js', __DIR__.'/resources/css/app.css'];
     }
 
     public function translations(): string
     {
-        return $this->path().'/lang';
+        return 'lang';
     }
 
     public function config(): array
     {
-        return ['blog' => $this->path().'/config/blog.php'];
+        return ['blog' => 'config/blog.php'];
     }
 }
