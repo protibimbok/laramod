@@ -190,6 +190,8 @@ Laravel finds factories by naming convention, which does not reach into a module
 
 Generated view names are namespaced (`view('blog::components.alert')`), and models, enums, traits, interfaces and scopes always go to `Models`, `Enums`, `Concerns`, `Contracts` and `Models/Scopes`.
 
+Only the application's own modules are written to. `--module` fails for a module in `vendor`, or outside the application as a symlinked `path` repository is, and what such a module provides is [published](#publishing) instead.
+
 A generator from another package supports the option once it uses the `Laramod\Console\Concerns\TargetsModule` trait, provided it extends Laravel's `GeneratorCommand`.
 
 ## Publishing

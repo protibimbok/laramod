@@ -58,7 +58,24 @@ trait ResolvesModule
             $this->fail(sprintf('Module [%s] is not registered.', $name));
         }
 
+        if (! $this->ownsModule($module)) {
+            $this->fail(sprintf('Module [%s] is not part of the application and is read-only.', $module->name()));
+        }
+
         return $module;
+    }
+
+    /**
+     * Determine if the module is the application's own: inside the application and outside its vendor directory.
+     *
+     * Real paths are compared, because a package from a "path" repository is a symlink out of the vendor directory.
+     */
+    protected function ownsModule(Module $module): bool
+    {
+        $path = (realpath($module->path()) ?: $module->path()).DIRECTORY_SEPARATOR;
+        $base = (realpath($this->laravel->basePath()) ?: $this->laravel->basePath()).DIRECTORY_SEPARATOR;
+
+        return str_starts_with($path, $base) && ! str_starts_with($path, $base.'vendor'.DIRECTORY_SEPARATOR);
     }
 
     /**

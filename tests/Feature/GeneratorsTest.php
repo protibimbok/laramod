@@ -216,6 +216,31 @@ class GeneratorsTest extends TestCase
         $this->assertSame([], (new Filesystem)->allFiles(ScratchModule::$path));
     }
 
+    #[DataProvider('foreignModulePaths')]
+    public function test_a_module_that_is_not_the_applications_own_is_read_only(string $path): void
+    {
+        (new Filesystem)->makeDirectory(DeclaredModule::$path = str_replace('{base}', $this->basePath, $path), recursive: true);
+
+        $this->artisan('make:model', ['name' => 'Post', '--module' => 'declared'])
+            ->expectsOutputToContain('Module [declared] is not part of the application and is read-only.')
+            ->assertFailed();
+
+        $this->assertSame([], (new Filesystem)->allFiles(DeclaredModule::$path));
+
+        (new Filesystem)->deleteDirectory(DeclaredModule::$path);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function foreignModulePaths(): array
+    {
+        return [
+            'installed in vendor' => ['{base}/vendor/acme/declared'],
+            'symlinked from a path repository' => ['{base}-declared'],
+        ];
+    }
+
     public function test_an_unknown_module_is_rejected(): void
     {
         $this->artisan('make:model', ['name' => 'Post', '--module' => 'Shop'])
